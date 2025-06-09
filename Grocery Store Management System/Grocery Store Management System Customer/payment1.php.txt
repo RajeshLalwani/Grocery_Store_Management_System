@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Form</title>
+</head>
+<body>
+    <form action="payment.php" method="POST">
+        <label for="payment_type">Select Payment Type:</label><br>
+        <input type="radio" id="cod" name="payment_type" value="Cash on Delivery" required>
+        <label for="cod">Cash on Delivery</label><br>
+        
+        <input type="radio" id="upi" name="payment_type" value="UPI" required>
+        <label for="upi">UPI</label><br><br>
+        
+        <label for="payment_detail">Payment Details (e.g., UPI ID or Address for COD):</label><br>
+        <input type="text" id="payment_detail" name="payment_detail" required><br><br>
+        
+        <label for="payment_amount">Amount:</label><br>
+        <input type="number" id="payment_amount" name="payment_amount" step="0.01" required><br><br>
+        
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
+
+<?php
+// PHP code to handle form submission
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "grocery store";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+if ($conn->connect_error) {
+  die("Connection failed: " . $conn->connect_error);
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  $payment_type = $conn->real_escape_string($_POST['payment_type']);
+  $payment_detail = $conn->real_escape_string($_POST['payment_detail']);
+  $payment_amount = $conn->real_escape_string($_POST['payment_amount']);
+
+  $sql = "INSERT INTO payment (p_type, p_detail, p_amount) 
+          VALUES ('$payment_type', '$payment_detail', '$payment_amount')";
+
+  if ($conn->query($sql) === TRUE) {
+    echo "Payment details submitted successfully!";
+  } else {
+    echo "Error: " . $sql . "<br>" . $conn->error;
+  }
+
+  $conn->close();
+}
+?>
